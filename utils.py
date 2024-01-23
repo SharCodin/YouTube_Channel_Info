@@ -26,12 +26,20 @@ def get_info_from_subscriptions():
 def get_channel_id_from_video(video_url):
     video_id = video_url.split("v=")[1]
     api_url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={API_KEY}"
-    breakpoint()
     response = requests.get(api_url)
     data = response.json()
 
     channel_id = data['items'][0]['snippet']['channelId']
-    print("Channel ID:", channel_id)
+    print("\nChannel ID:", channel_id)
 
-    with open("D:/UserFiles/Projects/Python/daily_feeds/feeds/scraper/crawler/youtube/subscriptions.txt", "a") as f:
-        f.write(f"{channel_id}\n")
+    file_path = "D:/UserFiles/Projects/Python/daily_feeds/feeds/scraper/crawler/youtube/subscriptions.txt"
+
+    with open(file_path, "r") as f:
+        existing_channels = f.read().splitlines()
+
+    if channel_id not in existing_channels:
+        with open(file_path, "a") as f:
+            f.write(f"{channel_id}\n")
+        print(f"ADDED: Channel ID {channel_id} added to the file.")
+    else:
+        print(f"PASS: Channel ID {channel_id} is already in the file.")
